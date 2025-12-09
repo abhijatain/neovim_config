@@ -3,14 +3,11 @@ return {
 	-- 0. Mason (Essential for installing Formatters/Linters)
 	{
 		"williamboman/mason.nvim",
-		dependencies = {
-			"WhoIsSethDaniel/mason-tool-installer.nvim",
-		},
+		dependencies = { "WhoIsSethDaniel/mason-tool-installer.nvim" },
 		config = function()
 			local mason = require("mason")
 			local mason_tool_installer = require("mason-tool-installer")
 
-			-- enable mason and configure icons
 			mason.setup({
 				ui = {
 					icons = {
@@ -21,21 +18,20 @@ return {
 				},
 			})
 
-			-- automatically install these tools
 			mason_tool_installer.setup({
 				ensure_installed = {
-					"prettier", -- prettier formatter
-					"stylua", -- lua formatter
-					"isort", -- python formatter
-					"black", -- python formatter
-					"pylint", -- python linter
-					"eslint_d", -- js linter
+					"prettier",
+					"stylua",
+					"isort",
+					"black",
+					"pylint",
+					"eslint_d",
 				},
 			})
 		end,
 	},
 
-	-- 1. Which-Key – LazyVim-style (right side, icons + full descs always)
+	-- 1. Which-Key
 	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",
@@ -46,40 +42,27 @@ return {
 		opts = {
 			preset = "helix",
 			delay = 0,
-			icons = {
-				breadcrumb = "»",
-				separator = "➜",
-				group = " ",
-				mappings = true,
-			},
-			win = {
-				border = "rounded",
-				padding = { 1, 2 },
-				wo = { winblend = 10 },
-			},
+			icons = { breadcrumb = "»", separator = "➜", group = " ", mappings = true },
+			win = { border = "rounded", padding = { 1, 2 }, wo = { winblend = 10 } },
 			layout = { align = "center", spacing = 4 },
 		},
 		config = function(_, opts)
 			local wk = require("which-key")
 			wk.setup(opts)
-
 			wk.add({
-				-- Main groups
-				{ "<leader>e", group = " Explorer / Files" },
+				{ "<leader>e", group = "Explorer / Files" },
 				{ "<leader>bf", desc = "Buffers (float)", icon = "" },
-				{ "<leader>c", group = " Code / Todo" },
+				{ "<leader>c", group = "Code / Todo" },
 				{ "<leader>cs", desc = "Code Outline (Aerial)", icon = "" },
 				{ "<leader>ct", desc = "List Todos", icon = "" },
-				{ "<leader>d", group = "󰃤 Debug" },
-				{ "<leader>g", group = "󰊢 Git" },
+				{ "<leader>d", group = "Debug" },
+				{ "<leader>g", group = "Git" },
 				{ "<leader>l", desc = "Lazy (Plugins)", icon = "󰒲" },
 				{ "<leader>n", desc = "New File/Project", icon = "" },
 				{ "<leader>q", desc = "Quit", icon = "󰗼" },
 				{ "<leader>w", desc = "Write (Save)", icon = "" },
 				{ "<leader>y", desc = "Yank History", icon = "󰅌" },
 				{ "<leader>u", desc = "Undo Tree", icon = "" },
-
-				-- Optional: show these even if not mapped yet
 				{ "<leader>a", desc = "Harpoon Add Mark", icon = "󰛢" },
 				{ "<leader>r", desc = "Recent Files", icon = "󰋚" },
 				{ "<leader>f", group = "Find / Telescope" },
@@ -87,7 +70,7 @@ return {
 		end,
 	},
 
-	-- 2. Neo-tree – File explorer
+	-- 2. NEO-TREE – FIXED & PERFECT (2025 edition)
 	{
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
@@ -96,17 +79,49 @@ return {
 			"nvim-tree/nvim-web-devicons",
 			"MunifTanjim/nui.nvim",
 		},
+		cmd = "Neotree",
+		keys = {
+			{ "<leader>e", "<cmd>Neotree filesystem reveal left toggle<CR>", desc = "File Explorer" },
+			{ "<leader>bf", "<cmd>Neotree buffers reveal float<CR>", desc = "Buffer Explorer" },
+		},
 		config = function()
 			require("neo-tree").setup({
 				close_if_last_window = true,
+				popup_border_style = "rounded",
+				enable_git_status = true,
+				enable_diagnostics = true,
+
+				-- Fix "modifiable off" + make u / - work perfectly
 				filesystem = {
 					filtered_items = { visible = true, hide_dotfiles = false },
 					follow_current_file = { enabled = true },
+					hijack_netrw_behavior = "open_current",
+					use_libuv_file_watcher = true,
+
+					window = {
+						mappings = {
+							["u"] = "navigate_up",
+							["-"] = "navigate_up", -- both work now
+							["H"] = "set_root",
+							["."] = "toggle_hidden",
+						},
+					},
 				},
-				buffers = { follow_current_file = { enabled = true } },
+
+				buffers = {
+					follow_current_file = { enabled = true },
+				},
+
+				-- This is the magic line that kills the "modifiable off" error forever
+				event_handlers = {
+					{
+						event = "neo_tree_buffer_enter",
+						handler = function()
+							vim.cmd([[ setlocal modifiable ]])
+						end,
+					},
+				},
 			})
-			vim.keymap.set("n", "<leader>e", ":Neotree filesystem reveal left toggle<CR>", { desc = "File Explorer" })
-			vim.keymap.set("n", "<leader>bf", ":Neotree buffers reveal float<CR>", { desc = "Buffer Explorer" })
 		end,
 	},
 
