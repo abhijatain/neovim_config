@@ -41,6 +41,8 @@ return {
 				"cssls",
 				"tailwindcss",
 				"emmet_ls",
+				"astro",
+				"mdx_analyzer",
 			},
 			handlers = {
 				-- Default handler for all servers

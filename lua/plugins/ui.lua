@@ -17,17 +17,11 @@ return {
 		end,
 	},
 
+	{ "scottmckendry/cyberdream.nvim", name = "cyberdream", lazy = false, priority = 950 },
+	{ "nyoom-engineering/oxocarbon.nvim", name = "oxocarbon", lazy = false, priority = 950 },
+	{ "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false, priority = 950 },
 	{ "folke/tokyonight.nvim", lazy = false, priority = 950 },
-	{ "sainnhe/everforest", lazy = false, priority = 950 },
-	{ "rebelot/kanagawa.nvim", lazy = false, priority = 950 },
-	{ "sainnhe/gruvbox-material", lazy = false, priority = 950 },
-	{ "craftzdog/solarized-osaka.nvim", lazy = false, priority = 950 },
-	{ "rose-pine/neovim", name = "rose-pine", lazy = false, priority = 950 },
-	{ "dracula/vim", name = "dracula", lazy = false, priority = 950 },
-	{ "EdenEast/nightfox.nvim", lazy = false, priority = 950 },
-	{ "navarasu/onedark.nvim", name = "onedark", lazy = false, priority = 950 },
 	{ "LunarVim/onedarker.nvim", lazy = false, priority = 950 },
-	{ "kristijanhusak/vim-hybrid-material", name = "hybrid_material", lazy = false, priority = 950 },
 	{ "NLKNguyen/papercolor-theme", name = "PaperColor", lazy = false, priority = 950 },
 
 	-- LIGHT THEMES (beautiful & popular in 2025)
@@ -60,23 +54,19 @@ return {
 			require("themery").setup({
 				themes = {
 					-- DARK
+					{ name = "Cyberdream", colorscheme = "cyberdream" },
+					{ name = "Oxocarbon", colorscheme = "oxocarbon" },
+					{ name = "Moonfly", colorscheme = "moonfly" },
 					{ name = "Catppuccin Mocha", colorscheme = "catppuccin" },
 					{ name = "Tokyonight Night", colorscheme = "tokyonight-night" },
-					{ name = "Everforest Hard", colorscheme = "everforest" },
-					{ name = "Kanagawa Dragon", colorscheme = "kanagawa" },
-					{ name = "Gruvbox Material", colorscheme = "gruvbox-material" },
-					{ name = "Solarized Osaka", colorscheme = "solarized-osaka" },
-					{ name = "Rose Pine", colorscheme = "rose-pine" },
-					{ name = "Dracula", colorscheme = "dracula" },
-					{ name = "Nightfox", colorscheme = "nightfox" },
-					{ name = "OneDark Deep", colorscheme = "onedark" },
-					{ name = "Hybrid Material", colorscheme = "hybrid_material" },
 
 					-- LIGHT – these are gorgeous and work perfectly
 					{ name = "PaperColor Light", colorscheme = "PaperColor" },
 					{ name = "Material Lighter", colorscheme = "material-lighter" },
 					{ name = "Zephyr Light", colorscheme = "zephyr" },
 					{ name = "Dayfox (Light)", colorscheme = "dayfox" },
+					-- Original / Default (Revert option)
+					{ name = "Nvim Default", colorscheme = "default" },
 				},
 				livePreview = true,
 				makePersistent = true,
@@ -105,9 +95,8 @@ return {
 			end)
 		end,
 	},
-
 	-------------------------------------------------------------------
-	-- 3. LUALINE – auto matches current theme
+	-- 3. LUALINE
 	-------------------------------------------------------------------
 	{
 		"nvim-lualine/lualine.nvim",
@@ -124,6 +113,7 @@ return {
 			})
 		end,
 	},
+
 	-------------------------------------------------------------------
 	-- 4. MINI.NVIM SUITE
 	-------------------------------------------------------------------
@@ -138,7 +128,7 @@ return {
 	{
 		"echasnovski/mini.comment",
 		version = false,
-		keys = "gc",
+		keys = { { "gc", mode = { "n", "v" } } },
 		config = function()
 			require("mini.comment").setup()
 		end,
@@ -154,17 +144,23 @@ return {
 	{
 		"echasnovski/mini.surround",
 		version = false,
-		keys = { "sa", "sd", "sr" },
+		event = "VeryLazy",
 		config = function()
-			require("mini.surround").setup()
-			local keymap = vim.keymap.set
-			keymap("n", '<leader>s"', 'viwsa"', { remap = true })
-			keymap("n", "<leader>s'", "viwsa'", { remap = true })
-			keymap("n", "<leader>s(", "viwsa(", { remap = true })
-			keymap("n", "<leader>s[", "viwsa[", { remap = true })
-			keymap("n", "<leader>s{", "viwsa{", { remap = true })
-			keymap("n", "<leader>s<", "viwsa<", { remap = true })
-			keymap("v", "<leader>s", "<Plug>(mini.surround-add)", { remap = true })
+			require("mini.surround").setup({
+				mappings = {
+					add = "sa",
+					delete = "sd",
+					replace = "sr",
+					find = "sf",
+					find_left = "sF",
+					highlight = "sh",
+					update_n_lines = "sn",
+					suffix_last = "l",
+					suffix_next = "n",
+				},
+			})
+			vim.keymap.set("x", "s", [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
+			vim.keymap.set("x", "S", [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
 		end,
 	},
 }
